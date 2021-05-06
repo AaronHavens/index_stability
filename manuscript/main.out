@@ -2,4 +2,6 @@
 \BOOKMARK [2][-]{subsection.1.1}{Topological Degree of a Differentiable Function}{section.1}% 2
 \BOOKMARK [2][-]{subsection.1.2}{Index of an Equilibrium Point}{section.1}% 3
 \BOOKMARK [1][-]{section.2}{Approximate Methods for Determining the Index of an Equilibrium Point}{}% 4
-\BOOKMARK [2][-]{subsection.2.1}{Clustering Approximate Preimages with Persistent Homology}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.1}{Persistent Homology in Point Clouds}{section.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Persistence Diagrams and the ``Life'' of Connected Componenets}{subsection.2.1}% 6
+\BOOKMARK [1][-]{section.3}{Methods and Algorithms}{}% 7

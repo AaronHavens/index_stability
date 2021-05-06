@@ -11,7 +11,8 @@
 \usepackage{enumerate}
 \usepackage{algorithm2e}
 \usepackage{bbm}
-%\graphicspath{{../figs/}}
+\usepackage{mathtools}
+%\graphicspath{{/figs/}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Z}{\mathbb{Z}}
 \newtheorem{theorem}{Theorem}[section]
@@ -65,13 +66,39 @@ in dimension $n\neq 4$ with isolated equilibrium point $x^*$. Then $x^*$ is loca
 \end{theorem}
 It should be noted that since degree holds under homotopy equivalence, its very possible that we have two vector fields homotopic to each other where one is stable and the other is not. Still the index can be of great use for nonlinear systems, but it is in general difficult to compute. In the following section we will propose some numerical methods for computing the index of a differentiable vector field in $\mathbb{R}^n$.
 \section{Approximate Methods for Determining the Index of an Equilibrium Point}
-Consider the problem of determining the index of an isolated equilibrium point $x^*$ of a function differentiable function $f:\mathbb{R}^d \rightarrow \mathbb{R}^d$. Defining $f_{\varepsilon} : S_{\varepsilon}(x^*) \rightarrow S^{n-1}$ as in the previous section, we are able to obtain samples $\{\left(x_n, f_{\varepsilon}(x_n)\right)\}_{n}$ for $x_n\in S_{\varepsilon}(x^*)$. In order to compute the index we must determine, for a regular value $y \in S^{n-1}$ of $f_{\varepsilon}$, the degree $f_{\varepsilon}$ and thus the preimage $f_{\varepsilon}^{-1}(y)$. Since we are only given samples of the function, we must find some way of numerically determining the preimage. Lets define the \textit{approximate preimage} of $f_{\varepsilon}$ at $y$ for $\delta>0$ to be
+Consider the problem of determining the index of an isolated equilibrium point $x^*$ of a function differentiable function $f:\mathbb{R}^d \rightarrow \mathbb{R}^d$. Defining $f_{\varepsilon} : S_{\varepsilon}(x^*) \rightarrow S^{n-1}$ as in the previous section, we are able to obtain samples $\{\left(x_n, f_{\varepsilon}(x_n)\right)\}_{n}$ for $x_n\in S_{\varepsilon}(x^*)$. In order to compute the index we must determine, for a regular value $y \in S^{n-1}$ of $f_{\varepsilon}$, the degree $f_{\varepsilon}$ and which requires the preimage $f_{\varepsilon}^{-1}(y)$. Although $f^{-1}(\varepsilon)$ is discrete and finite, it has measure zero in the domain and it difficult to determine exactly through sampling.
+\paragraph{Approximate Preimage}
+Since we are only given samples of the function, we must find some way of numerically determining the preimage. Lets define the \textit{approximate preimage} of $f_{\varepsilon}$ at $y$ for $\delta>0$ to be
 \begin{align}
 N_{\delta}(y) := \{x\in S_{\varepsilon}(x^*) : ||f_{\varepsilon}(x) - y || < \delta \}
 \end{align}
-This allows to obtain an approximation of the preimage through sampling, as obtaining the true preimage would require possibly infinite samples. If we assume some regularity of the possible functions $f$ can take we can actually bound the number of samples necessary to ensure that each point in the preimage is contained in our sampled $\widehat{N}_{\delta}$. If we want to obtain $N_{\delta}(y)$ and $f_{\varepsilon}$ is $M$-Lipshitz, we would need to cover $S_{\varepsilon}(x^*)$ with enough points so that every point in $S_{\varepsilon}(x^*)$ is no more than $\delta/M$ away from a sampled point (i.e. an $\delta/M$-net of $S_{\varepsilon}(x^*)$ gives us an $\delta$-net of $S^{n-1}$ under the image of $f_{\varepsilon})$). However we may still run into the problem where we may always have other preimage points associated with nearby points in the image and it may require a $\delta$ very small, requiring more samples. We may have to query several preimages and compute some average degree to rule out these false preimage points that belong to the approximate preimage but not the exact preimage.
-
-Still there remains the problem of what to do once $N_{\delta}(y)$ is obtained. How do we determine which points coorespond to a particular preimage point? Also, how do we choose a ``representative'' for each cluster of points belonging to preimage point?
-\subsection{Clustering Approximate Preimages with Persistent Homology}
+This allows to obtain an approximation of the preimage through sampling, as obtaining the true preimage would require possibly infinite samples. If we assume some regularity of the possible functions $f$ can take we can actually bound the number of samples necessary to ensure that each point in the preimage is contained in our sampled $\widehat{N}_{\delta}$. For example, if we want to obtain $N_{\delta}(y)$ and $f_{\varepsilon}$ is $M$-Lipshitz, we would need to cover $S_{\varepsilon}(x^*)$ with enough points so that every point in $S_{\varepsilon}(x^*)$ is no more than $\delta/M$ away from a sampled point (i.e. an $\delta/M$-net of $S_{\varepsilon}(x^*)$ gives us an $\delta$-net of $S^{n-1}$ under the image of $f_{\varepsilon})$). However we may still run into the problem where we may always have other preimage points associated with nearby points in the image and it may require a $\delta$ very small, requiring more samples. We may have to query several preimages and compute some average degree to rule out these false preimage points that belong to the approximate preimage but not the exact preimage.
 The task of determining the clusters corresponding to distinct points in the preimage may be thought of generally as a clustering problem. Its not obvious how to decide some local measure of association to assign a sample to a cluster. Rather than choosing an association distance heuristically, we can use a ideas of persistent homology (a slightly more advanced heuristic), specifically the $0d$-homology to sweep over an association distance and determine the number of connected components in our data set. Using the persistent diagram, we choose the appropriate distance based on ``births'' and ``deaths'' of connected components. If we choose $\delta$ small enough, we should be able to get isolate only neighborhoods corresponding the preimage $f_{\varepsilon}^{-1}(y)$.
+
+\subsection{Persistent Homology in Point Clouds}
+In essense $N_{\delta}(y)$ of a particular regular value is a discrete set of points in a metric space where a distance may be assigned between points. For more structure we may try to assign a simplicial complex on our data, namely we look at \textit{Vietrois-Rips Complexes} (Rips for shorthand notation). Given a point cloud of data $D$ we denote the Rips complex to be the simplicial complex whose simplicies are all point in $D$ at most $\varepsilon$ in distance with respect to the metric.
+\begin{align}
+	R_{\varepsilon}(D) = \{ \sigma \subset D : d(x,y)<\varepsilon,\quad \forall x,y \in \sigma\}
+\end{align}
+This construction of simplicial complexes is obviously dependent on a chosen proximity parameter $\varepsilon$ and we would like to choose the ``best'' parameter in terms of emergent topological features. Persistent homology attempts to do this by tracking how long each homology class of $R_{\varepsilon}(D)$ persists as we sweep the parameter $\varepsilon$. For our purposes of clustering we focus on zeroth homology class which will simply track the number of connected componenets in our complex. Let $\{K_{\varepsilon}:\varepsilon > 0 \}$ be a filtration on a simplical complex. The $0$\textsuperscript{th} persistent homology of $K$ is given by
+\begin{align}
+	PH_0(K) \coloneqq \{H_0(K_{\varepsilon)}\}_{\varepsilon>0}
+\end{align}
+along with the linear maps induced by the inclusions $K_{\varepsilon} \xhookrightarrow{} K_{\eta}$ for all $0<\varepsilon < \eta$.
+\subsubsection{Persistence Diagrams and the ``Life'' of Connected Componenets}
+\section{Methods and Algorithms}
+Algorithm Sketch
+\begin{itemize}
+	\item Sample $S_{\varepsilon}(x_*)$ with $N$ number of samples.
+	\item Compute approximate preimage $N_{\delta}(y)$ from samples.
+	\item Compute the sign determinate of the jacobian at each $x \in N_{\delta}(y)$ (local degree).
+	\item Split $N_{\delta}(y)$ into $N_{\delta}^+$ and $N_{\delta}^-$ coorepsonding to local degree number.
+	\item Compute distance of association using longest living features of $P H_0$ for each partition: $r^+$ and $r^-$
+	\item Finally return connected components of the Rips complexes of $N_{\delta}^+$ and $N_{\delta}^-$ using radii $r^-$ and $r^+$ respectively.
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figs/clustering.pdf}
+\caption{$0$-Persistent Homology clustering test.}
+\end{figure}
 \end{document}

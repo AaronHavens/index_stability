@@ -28,13 +28,13 @@ def sgn_det_jac(f, x):
     eigs = np.linalg.eigvals(result)
     det  = np_zeros(eigs.shape[0])
     for i, row in enumerate(eigs):
-        nonzero = row[abs(row) > 1E-6]
+        nonzero = row[abs(row) > 1e-6]
+        prod = np.prod(nonzero).real
         if (len(row) - len(nonzero))%2 == 1:
-            sgn_mod = -1
-        det[i] = sgn_mod*np.prod(row[abs(row) >1E-6]).real
-        
+            prod = -1 * prod
+        det[i] = prod
         if abs(det[i]) < 1e-6: det[i] = 0
-    sgn_det =np.sign(det)
+    print(det)
     sgn_det = np.sign(det)
     return sgn_det
 
