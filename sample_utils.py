@@ -9,7 +9,7 @@ def N_sample_n_sphere(n_dim, radius, n_samples):
     u = rnd.normal(0,1, size=(n_dim, n_samples))
     norm  = np.linalg.norm(u,2,axis=0)
     #norm = np.sum(u**2,axis=1)**(0.5)
-    return (u/norm).T
+    return radius*(u/norm).T
 
 def f1(x):
     return np.array([x[0]**2, x[1]**2])
